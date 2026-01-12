@@ -11,15 +11,26 @@ var streamCmd = &cobra.Command{
 	Short: "Manage streams",
 }
 
-var streamAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a stream component",
+var streamAddSourceCmd = &cobra.Command{
+	Use:   "add-source",
+	Short: "Add a stream source",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Adding stream datasource...")
+		// Just call the global interface
+		err := AppAPI.AddStreamSource()
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Stream source added successfully.")
+		return nil
+	},
 }
 
 // Example leaf command: source
-var streamAddSourceCmd = &cobra.Command{
-	Use:   "source",
-	Short: "Add a source",
+var streamAddSinkCmd = &cobra.Command{
+	Use:   "add-sink",
+	Short: "Add a stream sink",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Adding stream source...")
 		// Just call the global interface
@@ -37,8 +48,8 @@ var streamAddSourceCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(streamCmd)
-	streamCmd.AddCommand(streamAddCmd) // Add del/update similarly
+	streamCmd.AddCommand(streamAddSourceCmd, streamAddSinkCmd) // Add del/update similarly
 
-	streamAddCmd.AddCommand(streamAddSourceCmd)
+	//streamAddCmd.AddCommand(streamAddSourceCmd)
 	// Add other leaf commands: sink, router, connection
 }

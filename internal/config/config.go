@@ -34,6 +34,29 @@ func InitConfig() {
 
 	// If a config file is found, read it in.
 	_ = viper.ReadInConfig()
+
+	// --- ADD THIS BLOCK ---
+	// If a config file is loaded, hydrate the root variables from the active cluster
+	if viper.ConfigFileUsed() != "" {
+		current := viper.GetString("current-cluster")
+		if current != "" {
+			// Read values from the active profile
+			prefix := "clusters." + current + "."
+
+			// If the specific cluster has a value, override the root "default"
+			if v := viper.GetString(prefix + "namespace"); v != "" {
+				viper.Set("namespace", v)
+			}
+			if v := viper.GetString(prefix + "provider"); v != "" {
+				viper.Set("provider", v)
+			}
+			if v := viper.GetString(prefix + "context"); v != "" {
+				viper.Set("context", v)
+			}
+			// Ensure the 'cluster' key matches the current selection
+			viper.Set("cluster", current)
+		}
+	}
 }
 
 // SaveConfig writes the current viper configuration to disk
@@ -42,7 +65,7 @@ func SaveConfig() error {
 	if err != nil {
 		return err
 	}
-	
+
 	configDir := filepath.Join(home, ".ingext")
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		_ = os.Mkdir(configDir, 0755)

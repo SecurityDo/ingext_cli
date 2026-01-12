@@ -62,7 +62,7 @@ func (k *K8sClusterClient) Connect(kubeContext string) error {
 }
 
 // GetAppSecretToken fetches a secret from k8s and returns the "token" field
-func (k *K8sClusterClient) GetAppSecretToken(namespace, secretName string) (string, error) {
+func (k *K8sClusterClient) GetAppSecret(namespace, secretName string, key string) (string, error) {
 	if k.clientset == nil {
 		return "", fmt.Errorf("k8s client not initialized")
 	}
@@ -76,7 +76,7 @@ func (k *K8sClusterClient) GetAppSecretToken(namespace, secretName string) (stri
 
 	// Look for the 'token' key in the secret data
 	// K8s secrets data is []byte, so we cast it to string
-	if tokenBytes, ok := secret.Data["token"]; ok {
+	if tokenBytes, ok := secret.Data[key]; ok {
 		return string(tokenBytes), nil
 	}
 
@@ -85,5 +85,26 @@ func (k *K8sClusterClient) GetAppSecretToken(namespace, secretName string) (stri
 		return string(dataBytes), nil
 	}
 
-	return "", fmt.Errorf("secret '%s' found, but contains no 'token' key", secretName)
+	return "", fmt.Errorf("secret '%s' found, but contains no key %s", secretName, key)
+}
+
+func (k *K8sClusterClient) GetAppConfig(namespace, configName string, key string) (string, error) {
+	if k.clientset == nil {
+		return "", fmt.Errorf("k8s client not initialized")
+	}
+
+	// Fetch the Secret
+	// We use context.TODO() here, but ideally, pass a context down from the command
+	config, err := k.clientset.CoreV1().ConfigMaps(namespace).Get(context.TODO(), configName, metav1.GetOptions{})
+	if err != nil {
+		return "", fmt.Errorf("failed to get configMap '%s' in namespace '%s': %w", configName, namespace, err)
+	}
+
+	// Look for the 'token' key in the secret data
+	// K8s secrets data is []byte, so we cast it to string
+	if b, ok := config.Data[key]; ok {
+		return string(b), nil
+	}
+
+	return "", fmt.Errorf("configmap '%s' found, but contains no key %s", configName, key)
 }

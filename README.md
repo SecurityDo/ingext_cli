@@ -24,7 +24,7 @@ cd ingext
 go build -o ingext cmd/ingext/main.go
 
 # (Optional) Move to path
-mv ingext /usr/local/bin/
+install -m 755 ingext /usr/local/bin/.
 
 ```
 
@@ -34,10 +34,10 @@ Before running commands, configure the target Kubernetes cluster and namespace. 
 
 ```bash
 # Set your default target
-ingext config --cluster <kube-context-name> --namespace <app-namespace> --provider <eks|aks|gke>
+ingext config --cluster <k8s-cluster> --namespace <app-namespace> --context <kubectlContext>  --provider <eks|aks|gke>
 
 # Example
-ingext config --cluster minikube --namespace ingext-dev --provider local
+ingext config --cluster datalake  --namespace ingext --provider eks --context arn:aws:eks:$Region:$AWSAccount:cluster/datalake 
 
 ```
 
@@ -53,7 +53,7 @@ You can override defaults using `INGEXT_` prefixed variables:
 
 ```bash
 export INGEXT_CLUSTER=prod-cluster
-export INGEXT_NAMESPACE=prod-ns
+export INGEXT_NAMESPACE=ingext
 
 ```
 
@@ -65,10 +65,10 @@ Manage users and access tokens.
 
 ```bash
 # Add a new user
-ingext auth add user --name alice --role admin --displayName "Alice Smith"
+ingext user add --name foo@gmail.com --role admin --displayName "Foo Bar"
 
 # Add an API token for a user
-ingext auth add token --name alice
+ingext user del --name foo@gmail.com
 
 ```
 

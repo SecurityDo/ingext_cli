@@ -42,6 +42,13 @@ var RootCmd = &cobra.Command{
 			return nil
 		}
 
+		// 1. SKIP logic for Help and Autocompletion
+		// Cobra adds a "help" command automatically.
+		// "__complete" is used during shell tab-completion.
+		if cmd.Name() == "help" || cmd.Name() == "__complete" {
+			return nil
+		}
+
 		// 2. Load values from Viper (which now holds flags + config file values)
 		clusterName := viper.GetString("cluster")
 		namespace := viper.GetString("namespace")

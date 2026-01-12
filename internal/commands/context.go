@@ -4,7 +4,7 @@ import "ingext/internal/api"
 
 // AppAPI is the global reference used by all subcommands.
 // We use the interface type so it can be mocked for testing.
-var AppAPI api.IngextAppAPI
+var AppAPI *api.Client
 
 func init() {
 	// Inject the real implementation by default.
