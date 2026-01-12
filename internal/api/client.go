@@ -91,7 +91,7 @@ func (c *Client) Init(cluster, namespace string, kubeContext string) error {
 
 	c.Logger.Info("initialized ingext client",
 		"siteURL", config.SiteURL,
-		"token", token,
+		//"token", token,
 	)
 
 	return nil
@@ -99,24 +99,5 @@ func (c *Client) Init(cluster, namespace string, kubeContext string) error {
 
 func (c *Client) Call(functionName string, functionArgs json.RawMessage) error {
 	// TODO: Implementation
-	return nil
-}
-
-func (c *Client) AddStreamSource() error {
-	// TODO: Implementation
-	//fmt.Println("Action: Adding Stream Source via API...")
-
-	// Use structured logging
-	c.Logger.Info("adding stream source",
-		"status", "pending",
-		"retry", 1,
-	)
-
-	// Warn or Error
-	//c.Logger.Debug("validating payload size...")
-	return nil
-}
-
-func (c *Client) AddStreamSink() error {
 	return nil
 }
